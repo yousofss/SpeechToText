@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Transcription</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Audio Transcription</h1>
+      <div class="upload-area" id="uploadArea">
+        <p>Drag and drop your audio file here or click to select</p>
+        <input type="file" id="fileInput" accept="audio/*" hidden />
+      </div>
+      <button id="transcribeBtn" disabled>Transcribe</button>
+      <div id="result" class="result-area"></div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>
