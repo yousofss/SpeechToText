@@ -1,76 +1,91 @@
-// Get DOM elements
-const uploadArea = document.getElementById('uploadArea');
+const uploadLabel = document.querySelector('.upload-label');
+const uploadText = document.getElementById('uploadText');
 const fileInput = document.getElementById('fileInput');
 const transcribeBtn = document.getElementById('transcribeBtn');
 const resultArea = document.getElementById('result');
+const transcriptionText = document.getElementById('transcriptionText');
+const copyBtn = document.getElementById('copyBtn');
 
-// Add event listeners
-uploadArea.addEventListener('click', () => fileInput.click());
-uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
+uploadLabel.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadLabel.style.backgroundColor = '#ecf0f1';
 });
-uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('dragover');
+
+uploadLabel.addEventListener('dragleave', () => {
+  uploadLabel.style.backgroundColor = '';
 });
-uploadArea.addEventListener('drop', handleDrop);
+
+uploadLabel.addEventListener('drop', handleDrop);
 fileInput.addEventListener('change', handleFileSelect);
 transcribeBtn.addEventListener('click', transcribeAudio);
+copyBtn.addEventListener('click', copyToClipboard);
 
-// Handle file drop
 function handleDrop(e) {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    handleFiles(e.dataTransfer.files);
+  e.preventDefault();
+  uploadLabel.style.backgroundColor = '';
+  handleFiles(e.dataTransfer.files);
 }
 
-// Handle file selection
 function handleFileSelect(e) {
-    handleFiles(e.target.files);
+  handleFiles(e.target.files);
 }
 
-// Process selected files
 function handleFiles(files) {
-    if (files.length > 0) {
-        const file = files[0];
-        if (file.type.startsWith('audio/')) {
-            uploadArea.textContent = `Selected file: ${file.name}`;
-            transcribeBtn.disabled = false;
-        } else {
-            alert('Please select an audio file.');
-        }
+  if (files.length > 0) {
+    const file = files[0];
+    if (file.type.startsWith('audio/')) {
+      uploadText.textContent = `Selected: ${file.name}`;
+      transcribeBtn.disabled = false;
+    } else {
+      alert('Please select an audio file.');
     }
+  }
 }
 
-// Transcribe audio
 function transcribeAudio() {
-    const file = fileInput.files[0];
-    if (!file) return;
+  const file = fileInput.files[0];
+  if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
+  const formData = new FormData();
+  formData.append('file', file);
 
-    transcribeBtn.disabled = true;
-    transcribeBtn.textContent = 'Transcribing...';
-    resultArea.textContent = 'Processing...';
+  transcribeBtn.disabled = true;
+  transcribeBtn.textContent = 'Transcribing...';
+  resultArea.hidden = true;
 
-    fetch('/transcribe', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                resultArea.textContent = `Error: ${data.error}`;
-            } else {
-                resultArea.textContent = data.transcript;
-            }
-        })
-        .catch(error => {
-            resultArea.textContent = `Error: ${error.message}`;
-        })
-        .finally(() => {
-            transcribeBtn.disabled = false;
-            transcribeBtn.textContent = 'Transcribe';
-        });
+  fetch('/transcribe', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      showError(`Error: ${data.error}`);
+    } else {
+      transcriptionText.textContent = data.transcript;
+      resultArea.hidden = false;
+    }
+  })
+  .catch(error => {
+    showError(`Error: ${error.message}`);
+  })
+  .finally(() => {
+    transcribeBtn.disabled = false;
+    transcribeBtn.textContent = 'Transcribe';
+  });
+}
+
+function showError(message) {
+  resultArea.hidden = false;
+  transcriptionText.innerHTML = `<span style="color: #e74c3c;">${message}</span>`;
+}
+
+function copyToClipboard() {
+  navigator.clipboard.writeText(transcriptionText.textContent).then(() => {
+    const originalText = copyBtn.textContent;
+    copyBtn.textContent = 'Copied!';
+    setTimeout(() => {
+      copyBtn.textContent = originalText;
+    }, 2000);
+  });
 }
