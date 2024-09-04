@@ -5,6 +5,7 @@ const transcribeBtn = document.getElementById('transcribeBtn');
 const resultArea = document.getElementById('result');
 const transcriptionText = document.getElementById('transcriptionText');
 const copyBtn = document.getElementById('copyBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 
 uploadLabel.addEventListener('dragover', (e) => {
   e.preventDefault();
@@ -19,6 +20,7 @@ uploadLabel.addEventListener('drop', handleDrop);
 fileInput.addEventListener('change', handleFileSelect);
 transcribeBtn.addEventListener('click', transcribeAudio);
 copyBtn.addEventListener('click', copyToClipboard);
+downloadBtn.addEventListener('click', downloadTranscription);
 
 function handleDrop(e) {
   e.preventDefault();
@@ -50,7 +52,7 @@ function transcribeAudio() {
   formData.append('file', file);
 
   transcribeBtn.disabled = true;
-  transcribeBtn.textContent = 'Transcribing...';
+  transcribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transcribing...';
   resultArea.hidden = true;
 
   fetch('/transcribe', {
@@ -71,7 +73,7 @@ function transcribeAudio() {
   })
   .finally(() => {
     transcribeBtn.disabled = false;
-    transcribeBtn.textContent = 'Transcribe';
+    transcribeBtn.innerHTML = '<i class="fas fa-language"></i> Transcribe';
   });
 }
 
@@ -82,10 +84,41 @@ function showError(message) {
 
 function copyToClipboard() {
   navigator.clipboard.writeText(transcriptionText.textContent).then(() => {
-    const originalText = copyBtn.textContent;
-    copyBtn.textContent = 'Copied!';
+    const notification = document.createElement('div');
+    notification.textContent = 'Text copied!';
+    notification.className = 'copy-notification';
+    document.body.appendChild(notification);
     setTimeout(() => {
-      copyBtn.textContent = originalText;
+      notification.classList.add('show');
+    }, 10);
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
     }, 2000);
   });
 }
+
+function downloadTranscription() {
+  const text = transcriptionText.textContent;
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'transcription.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Remove or modify the file size check
+fileInput.addEventListener('change', function() {
+  const file = this.files[0];
+  if (file) {
+    const fileSizeMB = file.size / (1024 * 1024);
+    console.log(`File size: ${fileSizeMB.toFixed(2)} MB`);
+    // You can add a message here if you want to inform users about potential longer processing times for larger files
+  }
+});
