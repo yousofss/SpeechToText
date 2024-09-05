@@ -5,49 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Speech To Text</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
   </head>
   <body>
     <div class="content">
+      <div id="messageBox" class="message-box" style="display: none">
+        <div class="message-content">
+          <i id="messageIcon" class="fas"></i>
+          <span id="messageText"></span>
+        </div>
+        <button id="closeMessage" class="close-message">&times;</button>
+      </div>
       <div class="container">
         <h1>Speech To Text</h1>
-        <div class="rules-section">
-          <h2>Rules</h2>
-          <ul>
-            <li>Upload an audio file</li>
-            <li>Supported formats: M4A, MP3, WEBM, MP4, MPGA, WAV, MPEG</li>
-            <li>Please ensure clear audio for best results</li>
-          </ul>
-        </div>
-        <div class="upload-container">
-          <label for="fileInput" class="upload-label">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <span id="uploadText">Choose an audio file or drag it here</span>
-            <input type="file" id="fileInput" accept="audio/*" hidden />
-          </label>
-        </div>
-        <button id="transcribeBtn" disabled>
-          <i class="fas fa-language"></i> Transcribe
-        </button>
-        <div id="result" class="result-area" hidden>
-          <h2>Transcription Result</h2>
-          <div class="result-controls">
-            <button id="copyBtn" class="btn-icon" title="Copy to Clipboard">
-              <i class="fas fa-copy"></i> Copy
-            </button>
-            <button id="downloadBtn" class="btn-icon" title="Download as TXT">
-              <i class="fas fa-download"></i> Download
+        <div id="apiKeySection" class="api-key-section">
+          <h2>Enter your OpenAI API Key</h2>
+          <div class="api-key-input-container">
+            <input type="password" id="apiKeyInput" placeholder="Enter your OpenAI API Key" />
+            <button id="toggleApiKey" class="toggle-api-key">
+              <i class="fas fa-eye"></i>
             </button>
           </div>
-          <div class="transcription-container">
-            <p id="transcriptionText"></p>
+          <button id="saveApiKeyBtn" class="btn-primary">Save API Key</button>
+          <p class="api-key-info">
+            Don't have an API key?
+            <a href="https://platform.openai.com/account/api-keys" target="_blank">Get one here</a>
+          </p>
+        </div>
+        <div id="uploadSection" style="display: none">
+          <div class="api-key-controls">
+            <button id="deleteApiKeyBtn" class="btn-secondary">
+              <i class="fas fa-trash-alt"></i>
+              Delete API Key
+            </button>
+          </div>
+          <div class="rules-section">
+            <h2>Rules</h2>
+            <ul>
+              <li>Supported formats: M4A, MP3, WEBM, MP4, MPGA, WAV, MPEG</li>
+              <li>Please ensure clear audio for best results</li>
+            </ul>
+          </div>
+          <div class="upload-container">
+            <label for="fileInput" class="upload-label">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span id="uploadText">Choose an audio file or drag it here</span>
+              <input type="file" id="fileInput" accept="audio/*" hidden />
+            </label>
+          </div>
+          <button id="transcribeBtn" disabled>
+            <i class="fas fa-language"></i>
+            Transcribe
+          </button>
+          <div id="result" class="result-area" hidden>
+            <h2>Transcription Result</h2>
+            <div class="result-controls">
+              <button id="copyBtn" class="btn-icon" title="Copy to Clipboard">
+                <i class="fas fa-copy"></i>
+                Copy
+              </button>
+              <button id="downloadBtn" class="btn-icon" title="Download as TXT">
+                <i class="fas fa-download"></i>
+                Download
+              </button>
+            </div>
+            <div class="transcription-container">
+              <p id="transcriptionText"></p>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <footer>
-      <p>Created by <a href="https://github.com/yousofss" target="_blank"><i class="fab fa-github"></i> yousofss</a></p>
+      <p>
+        Created by
+        <a href="https://github.com/yousofss" target="_blank">
+          <i class="fab fa-github"></i>
+          yousofss
+        </a>
+      </p>
     </footer>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>

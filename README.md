@@ -6,6 +6,7 @@ This is a web application that allows users to transcribe audio files into text 
 
 - Support for multiple audio formats (M4A, MP3, WEBM, MP4, MPGA, WAV, MPEG)
 - Automatic handling of large files by splitting them into chunks
+- User-provided OpenAI API key for transcription and can be deleted at any time
 - Download transcription as a text file
 
 ## Technologies Used
@@ -18,33 +19,36 @@ This is a web application that allows users to transcribe audio files into text 
 ## Setup
 
 1. Clone the repository:
+
    ```
    git clone https://github.com/yousofss/SpeechToText.git
    cd SpeechToText
    ```
 
 2. Create a virtual environment and activate it:
+
    ```
    python -m venv venv
    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
    ```
 
 3. Install the required packages:
+
    ```
    pip install -r requirements.txt
    ```
 
-4. Create a `.env` file in the project root and add your OpenAI API key:
-   ```
-   OPENAI_API_KEY=your_api_key_here
-   ```
+4. Run the Flask application:
 
-5. Run the Flask application:
    ```
    python app.py
    ```
 
-6. Open a web browser and navigate to `http://localhost:5000` to use the application.
+5. Open a web browser and navigate to `http://localhost:5000` to use the application.
+
+## Security Note
+
+The application stores the API key in the browser's local storage for convenience. Make sure to use this application on a secure, private device. The API key is only sent to the server during transcription requests and is not stored on the server. You can delete the stored API key at any time using the "Delete API Key" button.
 
 ## Contributing
 

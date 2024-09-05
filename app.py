@@ -1,16 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import os
-from dotenv import load_dotenv
 import tempfile
 from pydub import AudioSegment
 import math
 
-load_dotenv()
-
 app = Flask(__name__)
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 CHUNK_SIZE = 23 * 1024 * 1024
 
@@ -44,12 +39,19 @@ def transcribe():
         return jsonify({"error": "No file part"})
 
     file = request.files["file"]
+    api_key = request.form.get("api_key")
+
+    if not api_key:
+        return jsonify({"error": "No API key provided"})
+
     if file.filename == "":
         return jsonify({"error": "No selected file"})
 
     print(f"Received file: {file.filename}")
 
     try:
+        client = OpenAI(api_key=api_key)
+
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
             file.save(temp_file.name)
             temp_filename = temp_file.name
@@ -86,7 +88,7 @@ def transcribe():
 
         return jsonify({"transcript": full_transcript})
     except Exception as e:
-        if os.path.exists(temp_filename):
+        if "temp_filename" in locals() and os.path.exists(temp_filename):
             os.remove(temp_filename)
             print(f"Removed temporary file due to error: {temp_filename}")
         print(f"Error during transcription: {str(e)}")
